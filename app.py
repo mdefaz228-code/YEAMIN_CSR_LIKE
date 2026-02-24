@@ -69,28 +69,58 @@ def get_random_batch_tokens(server_name, all_tokens):
     return random.sample(all_tokens, TOKEN_BATCH_SIZE)
 
 def load_tokens(server_name, for_visit=False):
-    if for_visit:
-        if server_name == "IND":
-            path = "token_ind_visit.json"
-        elif server_name in {"BR", "US", "SAC", "NA"}:
-            path = "token_br_visit.json"
-        else:
-            path = "token_bd_visit.json"
-    else:
-        if server_name == "IND":
-            path = "token_ind.json"
-        elif server_name in {"BR", "US", "SAC", "NA"}:
-            path = "token_br.json"
-        else:
-            path = "token_bd.json"
-
     try:
+        if for_visit:
+            if server_name == "IND":
+                path = "token_ind_visit.json"
+            elif server_name in {"BR", "US", "SAC", "NA"}:
+                path = "token_br_visit.json"
+            else:
+                path = "token_bd_visit.json"
+        else:
+            if server_name == "IND":
+                path = "token_ind.json"
+            elif server_name in {"BR", "US", "SAC", "NA"}:
+                path = "token_br.json"
+            else:
+                path = "token_bd.json"
+        
+        # ফাইল এক্সিস্ট করে কিনা চেক করুন
+        if not os.path.exists(path):
+            print(f"Warning: Token file {path} not found.")
+            return []
+        
         with open(path, "r") as f:
             data = json.load(f)
             
             if not isinstance(data, list):
-                print(f"Warning: Token file {path} is not a list. Returning empty list.")
                 return []
+            
+            processed_tokens = []
+            for item in data:
+                if not isinstance(item, dict):
+                    continue
+                
+                uid_value = item.get("uid", "")
+                token_value = None
+                
+                if "token" in item:
+                    token_value = item.get("token", "")
+                elif "pass" in item:
+                    token_value = item.get("pass", "")
+                
+                if token_value and token_value != "YOUR_TOKEN_HERE":  # ডামি টোকেন বাদ দিন
+                    processed_tokens.append({
+                        "uid": uid_value,
+                        "token": token_value
+                    })
+            
+            print(f"Loaded {len(processed_tokens)} valid tokens from {path}")
+            return processed_tokens
+            
+    except Exception as e:
+        print(f"Error loading tokens: {e}")
+        return []
             
             processed_tokens = []
             for item in data:
