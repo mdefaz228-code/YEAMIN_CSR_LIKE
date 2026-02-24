@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ফ্রি ফায়ার লাইক বুস্টার</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 span {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        button.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .result-header i {
+            font-size: 24px;
+            color: #667eea;
+        }
+
+        .result-header h3 {
+            color: #333;
+            font-size: 18px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .success-value {
+            color: #28a745;
+        }
+
+        .warning-value {
+            color: #dc3545;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-box .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-box .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .token-info {
+            background: #e8f4fd;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #0369a1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .token-info button {
+            width: auto;
+            padding: 5px 10px;
+            margin: 0;
+            background: #0369a1;
+            font-size: 12px;
+        }
+
+        .server-badge {
+            background: #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 <span>ফ্রি ফায়ার</span> 🔥</h1>
+            <p>লাইক বুস্টার টুল - শুধুমাত্র শিক্ষামূলক উদ্দেশ্যে</p>
+        </div>
+
+        <div class="token-info" id="tokenInfo">
+            <span>⏳ টোকেন তথ্য লোড হচ্ছে...</span>
+            <button onclick="checkTokenInfo()" style="background: #0369a1;">রিফ্রেশ</button>
+        </div>
+
+        <form id="likeForm">
+            <div class="form-group">
+                <label for="uid">
+                    <i class="fas fa-user"></i> ইউজার আইডি (UID)
+                </label>
+                <div class="input-group">
+                    <input type="text" id="uid" name="uid" placeholder="যেমন: 123456789" required>
+                    <span class="input-icon">🆔</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="server">
+                    <i class="fas fa-globe"></i> সার্ভার
+                </label>
+                <select id="server" name="server" required>
+                    <option value="">সার্ভার নির্বাচন করুন</option>
+                    <option value="BD">🇧🇩 বাংলাদেশ (BD)</option>
+                    <option value="IND">🇮🇳 ইন্ডিয়া (IND)</option>
+                    <option value="BR">🇧🇷 ব্রাজিল (BR)</option>
+                    <option value="US">🇺🇸 ইউএসএ (US)</option>
+                    <option value="NA">🌎 নর্থ আমেরিকা (NA)</option>
+                    <option value="SAC">🌍 সাউথ আমেরিকা (SAC)</option>
+                </select>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="random" name="random">
+                <label for="random">🎲 র্যান্ডম টোকেন ব্যবহার করুন</label>
+            </div>
+
+            <button type="submit" id="submitBtn">
+                <span id="btnText">❤️ লাইক দিন</span>
+            </button>
+        </form>
+
+        <div class="result-card" id="resultCard">
+            <div class="result-header">
+                <i>📊</i>
+                <h3>রেজাল্ট</h3>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">👤 নিকনেম:</span>
+                <span class="result-value" id="nickname">-</span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">🆔 ইউআইডি:</span>
+                <span class="result-value" id="displayUid">-</span>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">আগের লাইক</div>
+                    <div class="stat-number" id="beforeLikes">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">পরে লাইক</div>
+                    <div class="stat-number" id="afterLikes">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">দেওয়া লাইক</div>
+                    <div class="stat-number" id="givenLikes">0</div>
+                </div>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">📊 স্ট্যাটাস:</span>
+                <span class="result-value" id="status">-</span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">ℹ️ নোট:</span>
+                <span class="result-value" id="note">-</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚠️ এই টুল শুধুমাত্র শিক্ষামূলক উদ্দেশ্যে তৈরি | API ভার্সন 1.0</p>
+            <p class="server-badge" id="serverTime"></p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = window.location.origin; // অটোমেটিক্যালি কারেন্ট URL নিবে
+
+        // টোকেন ইনফো চেক করার ফাংশন
+        async function checkTokenInfo() {
+            const tokenInfoEl = document.getElementById('tokenInfo');
+            try {
+                const response = await fetch(`${API_BASE_URL}/token_info`);
+                const data = await response.json();
+                
+                let infoHtml = '📊 টোকেন তথ্য: ';
+                for (const [server, counts] of Object.entries(data)) {
+                    infoHtml += `${server}:${counts.regular_tokens} | `;
+                }
+                tokenInfoEl.innerHTML = `<span>${infoHtml}</span> <button onclick="checkTokenInfo()">রিফ্রেশ</button>`;
+            } catch (error) {
+                tokenInfoEl.innerHTML = `<span>❌ টোকেন তথ্য লোড করতে সমস্যা</span> <button onclick="checkTokenInfo()">রিফ্রেশ</button>`;
+            }
+        }
+
+        // ফর্ম সাবমিট হ্যান্ডলার
+        document.getElementById('likeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // ফর্ম ডাটা সংগ্রহ
+            const uid = document.getElementById('uid').value.trim();
+            const server = document.getElementById('server').value;
+            const random = document.getElementById('random').checked;
+
+            // ভ্যালিডেশন
+            if (!uid || !server) {
+                alert('UID এবং সার্ভার সিলেক্ট করুন!');
+                return;
+            }
+
+            if (isNaN(uid) || uid.length < 5) {
+                alert('সঠিক UID দিন (৫+ ডিজিটের নাম্বার)');
+                return;
+            }
+
+            // বাটন ডিজেবল এবং লোডিং স্টেট
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            submitBtn.classList.add('loading');
+            btnText.textContent = 'প্রসেসিং...';
+
+            // রিকোয়েস্ট পাঠানো
+            try {
+                const url = new URL(`${API_BASE_URL}/like`);
+                url.searchParams.append('uid', uid);
+                url.searchParams.append('server_name', server);
+                url.searchParams.append('random', random);
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // রেজাল্ট দেখানো
+                document.getElementById('nickname').textContent = data.PlayerNickname || 'N/A';
+                document.getElementById('displayUid').textContent = data.UID || uid;
+                document.getElementById('beforeLikes').textContent = data.LikesbeforeCommand || 0;
+                document.getElementById('afterLikes').textContent = data.LikesafterCommand || 0;
+                document.getElementById('givenLikes').textContent = data.LikesGivenByAPI || 0;
+                
+                let statusText = '';
+                if (data.status === 1) {
+                    statusText = '✅ সফল';
+                } else if (data.status === 2) {
+                    statusText = '⚠️ কোন পরিবর্তন হয়নি';
+                } else {
+                    statusText = '❌ ব্যর্থ';
+                }
+                document.getElementById('status').textContent = statusText;
+                document.getElementById('note').textContent = data.Note || '-';
+
+                // রেজাল্ট কার্ড দেখানো
+                document.getElementById('resultCard').classList.add('show');
+
+                // এনিমেশন ইফেক্ট
+                document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('এরর: ' + error.message);
+            } finally {
+                // বাটন এনাবেল
+                submitBtn.classList.remove('loading');
+                btnText.textContent = '❤️ লাইক দিন';
+            }
+        });
+
+        // সার্ভার টাইম দেখানো
+        function updateServerTime() {
+            const now = new Date();
+            const serverTimeEl = document.getElementById('serverTime');
+            serverTimeEl.textContent = `সার্ভার টাইম: ${now.toLocaleString('bn-BD')}`;
+        }
+
+        // পেজ লোড হলে
+        window.onload = function() {
+            checkTokenInfo();
+            updateServerTime();
+            setInterval(updateServerTime, 1000);
+        };
+
+        // ইউআইডি ইনপুটে শুধু নাম্বার
+        document.getElementById('uid').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // কিবোর্ড শর্টকাট (এন্টার চাপলে সাবমিট)
+        document.getElementById('uid').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('likeForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+
+    <!-- ফন্ট অসম জন্য (ঐচ্ছিক) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</body>
+</html>
